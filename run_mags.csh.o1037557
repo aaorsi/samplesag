@@ -1,0 +1,41 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/data2/aaorsi/SAG/Output/sag4_emlines/Cones_Stand Cones_Stand_igm ../out/rho_z.txt /fdg/aaorsi/LightCones/Stand/out/lightcone.hdf5 ../data/filters.info ../data/filters.dat /fdg/aaorsi/SAG/Version/sag4_emlines/data/A0V_KURUCZ_92.SED /fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat 200 6 224 225 226 227 228 229 64 1.0e8
+INPUT PARAMETERS
+RootDir = /data2/aaorsi/SAG/Output/sag4_emlines/Cones_Stand
+rho_zFile = ../out/rho_z.txt
+OutFile = /fdg/aaorsi/LightCones/Stand/out/lightcone.hdf5
+LightConeFile = /fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat
+NBinSed = 200
+NBoxes = 64
+NMags = 6
+idMag[i] = 224
+idMag[i] = 225
+idMag[i] = 226
+idMag[i] = 227
+idMag[i] = 228
+idMag[i] = 229
+MinStellarMass = 100000000.000000
+Reading look-up table ../out/rho_z.txt
+File ../out/rho_z.txt read
+Reading light cone file 
+/fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat
+Allocating 1.19209 GB for Lightcone galaxies
+14035329 galaxies read succesfully
+Magnitudes to be computed using the SED
+LSST March2012 total u
+LSST March2012 total g
+LSST March2012 total r
+LSST March2012 total i
+LSST March2012 total z
+LSST March2012 total y
+Nsteps_filter[ifilter] = 50
+Filter file read and stored 
+0 MVega[224] = 0.809464
+1 MVega[225] = -0.176587
+2 MVega[226] = 0.064792
+3 MVega[227] = 0.289501
+4 MVega[228] = 0.434286
+5 MVega[229] = 0.483255
+Reading snapshot 12
+Segmentation fault

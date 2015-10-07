@@ -1,0 +1,216 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+/data2/aaorsi/SAG/Output/sag4_emlines/Cones_Stand Cones_Stand ../out/rho_z.txt /fdg/aaorsi/LightCones/Stand/out/lightcone_igm.hdf5 ../data/filters.info ../data/filters.dat /fdg/aaorsi/SAG/Version/sag4_emlines/data/A0V_KURUCZ_92.SED /fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat 200 6 224 225 226 227 228 229 64 1.0e8
+INPUT PARAMETERS
+RootDir = /data2/aaorsi/SAG/Output/sag4_emlines/Cones_Stand
+rho_zFile = ../out/rho_z.txt
+OutFile = /fdg/aaorsi/LightCones/Stand/out/lightcone_igm.hdf5
+LightConeFile = /fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat
+NBinSed = 200
+NBoxes = 64
+NMags = 6
+idMag[i] = 224
+idMag[i] = 225
+idMag[i] = 226
+idMag[i] = 227
+idMag[i] = 228
+idMag[i] = 229
+MinStellarMass = 100000000.000000
+Reading look-up table ../out/rho_z.txt
+File ../out/rho_z.txt read
+Reading light cone file 
+/fdg/ammunoz1/SUBMM2013/Conitos/Lightcone_aaorsi_130709_Catalog_130725_9.61sqdeg/lightcone_cube_coords_ord_1.dat
+Allocating 1.19209 GB for Lightcone galaxies
+14035329 galaxies read succesfully
+Magnitudes to be computed using the SED
+LSST March2012 total u
+LSST March2012 total g
+LSST March2012 total r
+LSST March2012 total i
+LSST March2012 total z
+LSST March2012 total y
+Nsteps_filter[ifilter] = 50
+Filter file read and stored 
+0 MVega[224] = 0.809464
+1 MVega[225] = -0.176587
+2 MVega[226] = 0.064792
+3 MVega[227] = 0.289501
+4 MVega[228] = 0.434286
+5 MVega[229] = 0.483255
+Reading snapshot 12
+Total number of filtered galaxies: 2
+Reading snapshot 13
+Total number of filtered galaxies: 3
+Reading snapshot 14
+Total number of filtered galaxies: 7
+Reading snapshot 15
+Total number of filtered galaxies: 11
+Reading snapshot 16
+Total number of filtered galaxies: 24
+Reading snapshot 17
+Total number of filtered galaxies: 49
+Reading snapshot 18
+Total number of filtered galaxies: 84
+Reading snapshot 19
+Total number of filtered galaxies: 147
+Reading snapshot 20
+Total number of filtered galaxies: 291
+Reading snapshot 21
+Total number of filtered galaxies: 493
+Reading snapshot 22
+Total number of filtered galaxies: 791
+Reading snapshot 23
+Total number of filtered galaxies: 1233
+Reading snapshot 24
+Total number of filtered galaxies: 1862
+Reading snapshot 25
+Total number of filtered galaxies: 2708
+Reading snapshot 26
+Total number of filtered galaxies: 3762
+Reading snapshot 27
+Total number of filtered galaxies: 5202
+Reading snapshot 28
+Total number of filtered galaxies: 7040
+Reading snapshot 29
+Total number of filtered galaxies: 9347
+Reading snapshot 30
+Total number of filtered galaxies: 12088
+Reading snapshot 31
+Total number of filtered galaxies: 15540
+Reading snapshot 32
+Total number of filtered galaxies: 19404
+Reading snapshot 33
+Total number of filtered galaxies: 23971
+Reading snapshot 34
+Total number of filtered galaxies: 29128
+Reading snapshot 35
+Total number of filtered galaxies: 35082
+Reading snapshot 36
+Total number of filtered galaxies: 41580
+Reading snapshot 37
+Total number of filtered galaxies: 48891
+Reading snapshot 38
+Total number of filtered galaxies: 56889
+Reading snapshot 39
+Total number of filtered galaxies: 65785
+Reading snapshot 40
+Total number of filtered galaxies: 75257
+Reading snapshot 41
+Total number of filtered galaxies: 85704
+Reading snapshot 42
+Total number of filtered galaxies: 96365
+Reading snapshot 43
+Total number of filtered galaxies: 107595
+Reading snapshot 44
+Total number of filtered galaxies: 119306
+Reading snapshot 45
+Total number of filtered galaxies: 131403
+Reading snapshot 46
+Total number of filtered galaxies: 143906
+Reading snapshot 47
+Total number of filtered galaxies: 156785
+Reading snapshot 48
+Total number of filtered galaxies: 169550
+Reading snapshot 49
+Total number of filtered galaxies: 182575
+Reading snapshot 50
+Total number of filtered galaxies: 195466
+Reading snapshot 51
+Total number of filtered galaxies: 208159
+Reading snapshot 52
+Total number of filtered galaxies: 220866
+Reading snapshot 53
+Total number of filtered galaxies: 233211
+Reading snapshot 54
+Total number of filtered galaxies: 245332
+Reading snapshot 55
+Total number of filtered galaxies: 256972
+Reading snapshot 56
+Total number of filtered galaxies: 268282
+Reading snapshot 57
+Total number of filtered galaxies: 279129
+Reading snapshot 58
+Total number of filtered galaxies: 289676
+Reading snapshot 59
+Total number of filtered galaxies: 299735
+Reading snapshot 60
+Total number of filtered galaxies: 309009
+Reading snapshot 61
+Total number of filtered galaxies: 318140
+Reading snapshot 62
+Total number of filtered galaxies: 326719
+Reading snapshot 63
+Total number of filtered galaxies: 334752
+Reading snapshot 64
+Total number of filtered galaxies: 342762
+Reading snapshot 65
+Total number of filtered galaxies: 349936
+Reading snapshot 66
+Total number of filtered galaxies: 356844
+Reading snapshot 67
+Total number of filtered galaxies: 363072
+Reading snapshot 68
+Total number of filtered galaxies: 368906
+Reading snapshot 69
+Total number of filtered galaxies: 374446
+Reading snapshot 70
+Total number of filtered galaxies: 379597
+Reading snapshot 71
+Total number of filtered galaxies: 384640
+Reading snapshot 72
+Total number of filtered galaxies: 389060
+Reading snapshot 73
+Total number of filtered galaxies: 393118
+Reading snapshot 74
+Total number of filtered galaxies: 396975
+Reading snapshot 75
+Total number of filtered galaxies: 400419
+Reading snapshot 76
+Total number of filtered galaxies: 404118
+Reading snapshot 77
+Total number of filtered galaxies: 407235
+Reading snapshot 78
+Total number of filtered galaxies: 410088
+Reading snapshot 79
+Total number of filtered galaxies: 412989
+Reading snapshot 80
+Total number of filtered galaxies: 415494
+Reading snapshot 81
+Total number of filtered galaxies: 417670
+Reading snapshot 82
+Total number of filtered galaxies: 419998
+Reading snapshot 83
+Total number of filtered galaxies: 422141
+Reading snapshot 84
+Total number of filtered galaxies: 424086
+Reading snapshot 85
+Total number of filtered galaxies: 426100
+Reading snapshot 86
+Total number of filtered galaxies: 427883
+Reading snapshot 87
+Total number of filtered galaxies: 429585
+Reading snapshot 88
+Total number of filtered galaxies: 431244
+Reading snapshot 89
+Total number of filtered galaxies: 433000
+Reading snapshot 90
+Total number of filtered galaxies: 434509
+Reading snapshot 91
+Total number of filtered galaxies: 435801
+Reading snapshot 92
+Total number of filtered galaxies: 437095
+Reading snapshot 93
+Total number of filtered galaxies: 438339
+Reading snapshot 94
+Total number of filtered galaxies: 439844
+Reading snapshot 95
+Total number of filtered galaxies: 441189
+Reading snapshot 96
+Total number of filtered galaxies: 442521
+Reading snapshot 97
+Total number of filtered galaxies: 443720
+Reading snapshot 98
+Total number of filtered galaxies: 445345
+Reading snapshot 99
+Total number of filtered galaxies: 446985
+Writing HDF5 file... 
