@@ -1,5 +1,8 @@
-// Read lightcone file, read SAG file and extract SED of every galaxy, 
-// and compute the observer-frame magnitudes from a list.
+// samplesag: Extracts galaxy properties from a SAG run, and computes magnitudes, luminosities and dust extinction
+//
+// Alvaro Orsi, aaorsi@cefca.es
+//
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,7 +41,7 @@ int main(int argc, char *argv[])
 	char strbox[3];
 	int ibox;
 	props *Gal;
-    sagobj *SnapGal; 	
+  sagobj *SnapGal; 	
 	int currsnap,snap,idSnap;
 	float E_z,ExpRate,rlow,rhigh,zlow,zhigh,mag;
 	float *wlambda;	
@@ -83,301 +86,115 @@ int main(int argc, char *argv[])
 
 	wlambda = (float *) malloc(NBinSed * sizeof(float));
 
-		
-//	write_fits(Gal,zapp,zspace,Mags,OutFile);
-//	exit(0);
-
-/*#ifdef COMOVFILE
-
-	printf("Creatinf look-up table %s\n",rho_zFile);
-	if (!(flc = fopen(rho_zFile,"w")))
-	{
-		printF("Unable to create file %s\n",rho_zFile);
-		exit(1);
-	}
-
-	nTab = 1000;
-	int zmin = 0;
-	int zmax = 20.0;
-	float bin = (zmax - zmin)/(nTab -1.0);
-	
-	for (i = 0; i<nTab; i++)
-	{
-		
-		zTab[i] = i*bin + zmin;
-		rTab[i] = comoving_distance(zTab[i]);
-		
-		fprintf(flc,"%f %f",&zTab[i],&rTab[i]);
-	}
-	fclose(flc);
-	printf("File %s created. Now run again, without compiling flag COMOVFILE\n",rho_zFile);
-	exit(0); 	
-
-#endif		
-*/
-	
-
-	printf("Reading look-up table %s\n",rho_zFile);	
-	if (!(flc = fopen(rho_zFile,"r")))
-	{
-		printf("Unable to read file %s\n",rho_zFile);
-		exit(1);
-	}
-
-	j = 0;
-	while(!feof(flc))
-	{
-		fscanf(flc,"%f %f",&zTab[j],&rTab[j]);
-		j++;
-	}
-	
-	nTab = j;
-	
-	printf("File %s read\n",rho_zFile);
-	fclose(flc);
-	
-	printf("Reading light cone file \n%s\n",LightConeFile);	
-	
-	if (!(flc = fopen(LightConeFile,"r")))
-	{
-		printf("Unable to read file \n%s\n",LightConeFile);
-		exit(1);
-	}
-	
-	Gal = (props *) malloc(MAXGALS * sizeof(props));
-	printf("Allocating %g GB for Lightcone galaxies\n",MAXGALS*sizeof(props)/1024.0/1024.0/1024.0);
-//	Header of Lightcone file	
-	fgets(buf,MAXLEN,flc);
-
-	j = 0;
-	while(!feof(flc))
-	{
-//		printf("%d\n",j);
-		fscanf(flc,"%d %d %d %f %f %f %f %f %f %f %f %f %f",\
-		&Gal[j].snapshot,&Gal[j].id_lc,&Gal[j].id_snap,&Gal[j].x,&Gal[j].y,&Gal[j].z,\
-		&Gal[j].rho,&Gal[j].theta,&Gal[j].phi,&Gal[j].ra,&Gal[j].dec,&Gal[j].redshift,&Gal[j].v_r);
-
-/*	
-		fscanf(flc,"%d %ld %d %g %g %g %g %g %g %g %g %g %g",\
-		&Gal[j].snapshot,&Gal[j].id_lc,&Gal[j].id_snap,&junk,&junk,&junk,\
-		&Gal[j].rho,&junk,&junk,&junk,&junk,&Gal[j].redshift,&Gal[j].v_r);
-*/	
-		j++;
-	}
-	printf("%ld galaxies read succesfully\n",j);
-
-	NTotGals = j-1;
-	fclose(flc);
 
 	NTotGals = 1000000;
 
 	Filterlist = (float *) malloc(NFILTERMAX * NFILTERL * 2 * sizeof(float));
-  	Nsteps_filter = (int *) malloc(NFILTERMAX * sizeof(int));
+	Nsteps_filter = (int *) malloc(NFILTERMAX * sizeof(int));
 
 	get_filterinfo(FilterInfo);
 	read_filterfile(FilterData);
 	get_Vega_AB(VegaFile);			
 
-/*	if (!(fout = fopen(OutFile,"w")))	
-	{
-		printf("Unable to create file %s\n",OutFile);
-		exit(1);
-	}
-
-	fprintf(fout,"#Number of filters: %d\n",NMags);
-	fprintf(fout,"# idLightcone idSnapFile zreal zapp rho rho_app Mags(real) Mags(app)\n");
-*/
-
-	 	
-
 	currsnap = -1;	// This helps determining whether its necessary to open a new snapshot file
 
-	zapp 	 = (float *) malloc(NTotGals * sizeof(float));
-	zspace 	 = (float *) malloc(NTotGals * sizeof(float));
-
 	Mags = (float *) malloc(NTotGals * NMags*2 * sizeof(float));
-
 	taueff = (float *) malloc(NBinSed * sizeof(float));
 	spec = (float *) malloc(NBinSed * sizeof(float));
 
-/*	for(j = 0;j<NMags; j++);
-	{		
-		Mags[j]   = (float *) malloc(NTotGals * sizeof(float));
-		Mags[j+6] = (float *)malloc(NTotGals * sizeof(float));
-	}
-*/
-
-	for (j = 0; j<NTotGals; j++)
-//	for (j = 0; j<1e6; j++)
+	if (currsnap != snap)
 	{
-		snap = Gal[j].snapshot;	
-		redshift = Gal[j].redshift;
-		E_z = sqrt( pow((1 + redshift),3)*OmegaM + (1 - OmegaM));
-	    ExpRate = 1./(1 + redshift);
-		
-		zspace[j] = Gal[j].rho + Gal[j].v_r/(ExpRate*H0*E_z);
-		if (zspace[j] < 0.0) 
-			zspace[j] = 0.0;
 
-// 		Determine apparent redshift (in redshift space)				
-//		by using look-up table
+		printf("Reading snapshot %d\n",snap);
+		fflush(stdout);
 
-		k = 0;
-		while(rTab[k] <= zspace[j])
+		if (currsnap != -1)
 		{
-			rlow = rTab[k];
-			zlow = zTab[k];
-			k++;
-			if (k == nTab)
-			{
-				printf("zspace of gal. %d is out of look-up table range. Check!\n",j);
-				dprintf(zspace);
-				dprintf(Gal[j].redshift);
-				dprintf(Gal[j].rho);
-				exit(1);
-			}
+			for (i = 0;i<NGals; i++)
+				free(SnapGal[i].Sed);
+			free(SnapGal);
 		}
-		rhigh = rTab[k];
-		zhigh = zTab[k];
 
-		zapp[j] = (zspace[j] - rlow) / (rhigh - rlow) * (zhigh - zlow) + zlow;
-
-/*		if (zspace < Gal[j].rho)
-		{
-			dprintf(zspace);
-			dprintf(Gal[j].rho);
-			dprintf(redshift);
-			dprintf(zapp);
-		}
-*/
-
-		if (currsnap != snap)
-		{
-
-			printf("Reading snapshot %d\n",snap);
-			fflush(stdout);
-
-			if (currsnap != -1)
-			{
-				for (i = 0;i<NGals; i++)
-					free(SnapGal[i].Sed);
-				free(SnapGal);
-			}
-
-			SnapGal = (sagobj *) malloc(MAXGALSNAP * sizeof(sagobj)); 
-				
-			currsnap = snap;
+		SnapGal = (sagobj *) malloc(MAXGALSNAP * sizeof(sagobj)); 
+		currsnap = snap;
 	
 // Get Data from HDF5 snapshot file
 
-			if (snap < 10)
-				sprintf(strsnap,"00%d",snap);
+		if (snap < 10)
+			sprintf(strsnap,"00%d",snap);
+		else
+			sprintf(strsnap,"0%d",snap);
+
+		ig = 0l;
+		i = 0;	
+		for (ibox = 1;ibox <= NBoxes; ibox++)
+		{
+
+			if (ibox < 10)
+				sprintf(strbox,"00%d",ibox);
 			else
-				sprintf(strsnap,"0%d",snap);
-
-			ig = 0l;
-			i = 0;	
-			for (ibox = 1;ibox <= NBoxes; ibox++)
-			{
-
-				if (ibox < 10)
-					sprintf(strbox,"00%d",ibox);
-				else
-					sprintf(strbox,"0%d",ibox);
+				sprintf(strbox,"0%d",ibox);
 
 				
-				sprintf(hdf5file,"%s/%s/Subgalaxies/gal_itf_%s_SAG3_%s.hdf5",RootDir,strbox,strsnap,RunName);
+			sprintf(hdf5file,"%s/%s/Subgalaxies/gal_itf_%s_SAG3_%s.hdf5",\
+							RootDir,strbox,strsnap,RunName);
 			
-				if (!(fbox = fopen(hdf5file,"r")))
-				{
-//					fclose(fbox);
-					continue;
-				}
-				fclose(fbox);	
-//				printf("Reading %s\n",hdf5file);
+			if (!(fbox = fopen(hdf5file,"r")))
+				continue;
+			fclose(fbox);	
+			read_saghdf5(hdf5file,SnapGal,wlambda,ig);
 
-				read_saghdf5(hdf5file,SnapGal,wlambda,ig);
-
-//		Filtering by stellar mass
-/*				for (k = ig;k<ig+NGals;k++)
-				{
-					if(SnapGal[k].StellarMass >= MinStellarMass/1.0e10)
-					{
-						idFiltered[i] = k;
-						i++;
-					}	
-				}
-*/
-				ig += NGals;
-			}
+			ig += NGals;
+		}
 			
-			printf("Total number of filtered galaxies: %ld\n",ig);
-		}	
+	}	
 		
-		NGals = ig;
+	NGals = ig;
 
 		//idSnap identifies the galaxy within the SnapGal structure (the unfiltered array)
-		idSnap = Gal[j].id_snap;
+	idSnap = Gal[j].id_snap;
 
-		if (IGMAtt)
-		{
-			igm_attenuation(taueff,wlambda,redshift,idSnap);	
-			spec = SnapGal[idSnap].Sed;	
-			for (_i = 0;_i <NBinSed; _i++)
-				spec[_i] = SnapGal[idSnap].Sed[_i] * exp(-1*taueff[_i]);
-		}
-		else
-		{
-//			spec = SnapGal[idSnap].Sed;	
-			for (_i = 0;_i <NBinSed; _i++)
-				spec[_i] = SnapGal[idSnap].Sed[_i];
-		}
+	if (IGMAtt)
+	{
+		igm_attenuation(taueff,wlambda,redshift,idSnap);	
+		spec = SnapGal[idSnap].Sed;	
+		for (_i = 0;_i <NBinSed; _i++)
+			spec[_i] = SnapGal[idSnap].Sed[_i] * exp(-1*taueff[_i]);
+	}
+	else
+	{
+		for (_i = 0;_i <NBinSed; _i++)
+			spec[_i] = SnapGal[idSnap].Sed[_i];
+	}
 
-//		fprintf(fout,"%d\t%d\t%f\t%f\t%f\t%f\t",Gal[j].id_lc,idSnap,redshift,zapp,Gal[j].rho,zspace);				
 // 		Magnitudes in real-space, observer-frame
 
-		for (k = 0; k<NMags; k++)
-		{
-			id = k + (NMags*2)*j;
-			Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
-			wlambda,spec,1,redshift,0,1);
+	for (k = 0; k<NMags; k++)
+	{
+		id = k + (NMags*2)*j;
+		Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
+		wlambda,spec,1,redshift,0,1);
 
-/*			if (k <NMags-1)
-				fprintf(fout,"%f ",mag);
-			else
-				fprintf(fout,"%f\t",mag);
-*/
-		}
-// 			Magnitudes in redshift-space, observer-frame
-
-		for (k = 0; k<NMags; k++)
-		{
-			id = k+NMags + (NMags*2)*j;
-			Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
-			wlambda,spec,1,zapp[j],0,1);
-/*
-			if (k <NMags-1)
-				fprintf(fout,"%f ",mag);
-			else
-				fprintf(fout,"%f\n",mag);
-*/
-		}
 	}
 
 	if (strcmp(OutFormat,"HDF5") == 0 || \
-		strcmp(OutFormat,"BOTH") == 0)
+		strcmp(OutFormat,"ALL") == 0)
 	{
 		write_hdf5(Gal,zapp,zspace,Mags,OutFile);
 	}
+
+	if (strcmp(OutFormat,"ASCII") == 0 || \
+		  strcmp(OutFormat,"ALL") == 0)
+		write_ascee(Gal, zapp,zspace,Mags,OutFile);
 	
+
 	if (strcmp(OutFormat,"FITS") == 0 || \
 		strcmp(OutFormat,"BOTH") == 0)
 	{
 		write_fits(Gal,zapp,zspace,Mags,OutFile);
 	}
-	
 
-//	fclose(fout);
+
 	free(Gal);
 	free(SnapGal);
 
@@ -387,10 +204,6 @@ int main(int argc, char *argv[])
 	free(zspace);
 
 
-//	free(FilterInfo);
-//	free(FilterData);
-	
-//	free(Idinfo);
 
 }
 
