@@ -20,7 +20,7 @@
 #define NFILTERL     10000
 #define SED_MAXC     500
 
-#define SED_MAXW      10000
+#define SED_MAXW      2000
 #define SED_MAXAGE    300
 #define SED_MAXCHAR   150000
 #define SED_NBANDSMAX 30

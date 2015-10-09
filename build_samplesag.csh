@@ -21,8 +21,6 @@ set idMags  = (224 225 226 227 228 229)
 set NameMags= (u g r i z y)
 set AB      = (1 1 1 1 1 1)
 
-set proplist = 'redshift mstellar gt 1e8 mag_uo_ext mag_go_ext mag_ro_ext   '
-
 set nsnap       = `echo $#snaplist` 
 set nmags       = `echo $#idMags`
 @ nvol          = $ivf - $iv0 + 1
@@ -32,6 +30,5 @@ set nmags       = `echo $#idMags`
            $nmags $idMags $NameMags $AB \
            props redshift mstellar gt 1e8 mag_uox mag_gox mag_zox \
            l_lyalphax l_oii3727x mcold lt 1e12
-
 
 

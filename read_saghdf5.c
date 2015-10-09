@@ -40,6 +40,8 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr)
 		exit(1);
 	} 
 
+  NBinSed = sizeof(wlambda)/sizeof(wlambda[0])
+
 	BulgeMass = (float *) malloc(NGals * sizeof(float));
 
 	if (H5LTread_dataset_float(file_id,"/BulgeMass",BulgeMass) < 0)
