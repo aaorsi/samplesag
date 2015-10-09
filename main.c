@@ -51,26 +51,59 @@ int main(int argc, char *argv[])
 	float *taueff;	
 	float *spec;	
 
-	strcpy(RootDir,argv[1]);
-	strcpy(RunName,argv[2]);
-	strcpy(rho_zFile,argv[3]);
-	strcpy(OutFile	,argv[4]);
-	strcpy(FilterInfo,argv[5]);
-	strcpy(FilterData,argv[6]);
-	strcpy(VegaFile,argv[7]);
-	strcpy(LightConeFile, argv[8]);
-	NBinSed = atoi(argv[9]);
-	NMags   = atoi(argv[10]);
-	for (i = 0;i<NMags; i++)
-		idMag[i] = atoi(argv[11+i]);
-	NBoxes	= atoi(argv[NMags+11]);
-	MinStellarMass = atof(argv[NMags+12]);
-	IGMAtt = atoi(argv[NMags+13]);	
-	strcpy(OutFormat,argv[NMags+14]);
-	for (i = 0; i<NMags; i++)
-		sprintf(NameMags[i],"%s",argv[NMags+15+i]);
-//		strcpy(NameMags[i],argv[NMags+15+i]);
+	i = 1
+	strcpy(RootDir,argv[i++]);
+	strcpy(RunName,argv[i++]);
+	nsnap = atoi(argv[i++]);
+	int SnapList[nsnap];
+	for (j = 0; j<nsnap ; j++)
+		SnapList[i] = atoi(argv[i + j])
+	
+	i += j
 
+	nvol = atoi(argv[i++])
+	iv0	 = atoi(argv[i++])
+	ivf	 = atoi(argv[i++])
+
+	strcpy(OutputFormat,argv[i++]);
+	strcpy(FilterInfo,argv[i++]);
+	strcpy(FilterData,argv[i++]);
+	strcpy(VegaFile,argv[i++]);
+
+	NMags   = atoi(argv[i++]);
+
+	int idMag[NMags];
+	const char *NameMags[NMags];
+	int ABArr[NMags];
+
+	for (j = 0;j<NMags; j++)
+		idMag[i] = atoi(argv[i+j]);
+
+	i += j;
+	for (j = 0; j<NMags; j++)
+		sprintf(NameMags[j],"%s",argv[i + j]);
+
+	i += j;
+	for (j = 0; j<NMags; j++)
+		ABArr[j] = atoi(argv[i + j]);
+
+	i += j;
+
+	strcpy(propcheck,argv[i++]);
+
+//	Check consistency
+	if (propcheck != "props")
+	{
+		printf("ERROR: main.c: When reading arguments, \nproperty list expected, got this instead: %s\n",propcheck);
+		exit(1);
+	}
+
+	PropLength = argc - i;
+	
+	for (j = 0; j<NMags; j++)
+		sprintf(PropArr[j],"%s",argv[i + j]);
+
+	printf("SAMPLESAG\n\n");
 	printf("INPUT PARAMETERS\n");
 	dprints(RootDir);
 	dprints(rho_zFile);
