@@ -14,7 +14,7 @@
 #include "allvars.h"
 #include "proto.h"
 #include "fitsio.h"
-
+#include <gsl/gsl_rng.h>
 
 // Read IDs   
 
@@ -50,6 +50,15 @@ int main(int argc, char *argv[])
   float *Mags;
   float *taueff;  
   float *spec;  
+  float *incl;
+  const gsl_rng_type * T;
+
+  gsl_rng *r;
+  gsl_rng_env_setup();
+  T = gsl_rng_default;
+  r = gsl_rng_alloc (T);
+
+  gsl_rng_set(r, seed0);
 
   i = 1
   strcpy(RootDir,argv[i++]);
@@ -123,9 +132,11 @@ int main(int argc, char *argv[])
   currsnap = -1;  // This helps determining whether its necessary to open a new snapshot file
 
   Mags = (float *) malloc(NTotGals * NMags*2 * sizeof(float));
+  incl = (float *) malloc(NTotGals * sizeof(float));
   taueff = (float *) malloc(NBinSed * sizeof(float));
   spec = (float *) malloc(NBinSed * sizeof(float));
 
+  icount = 0
   if (currsnap != snap)
   {
 
@@ -166,7 +177,7 @@ int main(int argc, char *argv[])
       if (!(fbox = fopen(hdf5file,"r")))
         continue;
       fclose(fbox); 
-      read_saghdf5(hdf5file,SnapGal,wlambda,ig);
+      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icount);
 
       ig += NGals;
     }
@@ -175,29 +186,49 @@ int main(int argc, char *argv[])
     
   NGals = ig;
 
-    //idSnap identifies the galaxy within the SnapGal structure (the unfiltered array)
-  idSnap = Gal[j].id_snap;
+// A loop over all galaxies to compute their properties
 
-  if (IGMAtt)
+  for (id = 0; id < NGals; id++)
   {
-    igm_attenuation(taueff,wlambda,redshift,idSnap);  
-    spec = SnapGal[idSnap].Sed; 
-    for (_i = 0;_i <NBinSed; _i++)
-      spec[_i] = SnapGal[idSnap].Sed[_i] * exp(-1*taueff[_i]);
-  }
-  else
-  {
-    for (_i = 0;_i <NBinSed; _i++)
-      spec[_i] = SnapGal[idSnap].Sed[_i];
-  }
 
-//    Magnitudes in real-space, observer-frame
+    if (IGMAtt)
+    {
+      igm_attenuation(taueff,wlambda,redshift,id);  
+      spec = SnapGal[id].Sed; 
+      for (_i = 0;_i <NBinSed; _i++)
+        spec[_i] = SnapGal[id].Sed[_i] * exp(-1*taueff[_i]);
+    }
+    else
+    {
+      for (_i = 0;_i <NBinSed; _i++)
+        spec[_i] = SnapGal[id].Sed[_i];
+    }
 
-  for (k = 0; k<NMags; k++)
-  {
-    id = k + (NMags*2)*j;
-    Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
-    wlambda,spec,1,redshift,0,1);
+
+
+  //    Magnitudes in real-space, observer-frame
+    for (k = 0; k<NMags; k++)
+    {
+  //    id = k + (NMags*2)*j;
+      Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
+      wlambda,spec,1,redshift,0,1);
+    }
+
+  // Inclination angle (random) and dust extinction for each galaxy:    
+    incl[id] = gsl_rng_uniform (r);
+//  B-band magnitude is necessary to compute dust extinction for this model.
+    magB = compute_mag_filter(idB,Nsteps_filter[idB], wlambda,SnapGal[id].Sed,
+    0,redshift,0,0);
+    dust_ext[id] = dust_extinction(wlambda,incl[id],id,magbin,SnapGal[id].Sed,magB);
+
+// Compute emission-lines
+   nlyc_arr[id] = compute_lyc(wlambda,SnapGal[id].Sed); 
+   for (il = 0; il< NLines; il++)
+   {
+     line = integ_line(zcold[id],nlyc_arr[id], id, ised);
+   }
+
+
 
   }
 

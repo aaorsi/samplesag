@@ -9,7 +9,7 @@
 #include "proto.h"
 
 
-void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr)
+void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr,int icount)
 {	
 
 	hid_t file_id = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -34,13 +34,16 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr)
 //	printf("Read %d galaxies from file %s\n",NGals,fname);
 
 
-	if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/lambda",wlambda) < 0)
-	{
-		printf("unable to read lambda array. Exiting\n");
-		exit(1);
-	} 
+  if (icount == 0)
+  {
+	  if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/lambda",wlambda) < 0)
+	  {
+		  printf("unable to read lambda array. Exiting\n");
+		  exit(1);
+	  } 
 
-  NBinSed = sizeof(wlambda)/sizeof(wlambda[0])
+    NBinSed = sizeof(wlambda)/sizeof(wlambda[0]);
+  }
 
 	BulgeMass = (float *) malloc(NGals * sizeof(float));
 
@@ -78,7 +81,7 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr)
 	}
 
 //	No idea if this works... it must be tested.
-	k = 0;
+/*	k = 0;
 	for (i = 0;i < NGals; i++)
 	{
 		SMass = DiscMass[i] + BulgeMass[i];
@@ -93,7 +96,8 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr)
 			}	
 			k++;
 		}
-	}
+  }
+*/
 
 	NGals = k;
 
