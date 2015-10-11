@@ -67,7 +67,14 @@ typedef struct {
 	float *Sed;
 	float StellarMass;
 } sagobj;
-	
+
+typedef struct {
+  int type = 0;
+  char prop[50];
+  float val;
+} cond;
+
+
 int NBinSed;
 int NMags;
 long NGals;

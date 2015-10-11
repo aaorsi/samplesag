@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
   int ibox;
   props *Gal;
   sagobj *SnapGal;  
+  cond conditions[10];
   int currsnap,snap,idSnap;
   float E_z,ExpRate,rlow,rhigh,zlow,zhigh,mag;
   float *wlambda; 
@@ -52,6 +53,7 @@ int main(int argc, char *argv[])
   float *spec;  
   float *incl;
   const gsl_rng_type * T;
+
 
   gsl_rng *r;
   gsl_rng_env_setup();
@@ -109,8 +111,28 @@ int main(int argc, char *argv[])
 
   PropLength = argc - i;
   
-  for (j = 0; j<NMags; j++)
-    sprintf(PropArr[j],"%s",argv[i + j]);
+  for (j = 0; j<PropLength; j++)
+  {
+    // For now there are only two conditions implemented: gt and lt.
+    if (strcmp(argv[i + j],"gt") == 0)
+    {
+      conditions[k].prop = PropArr[j-1];
+      conditions[k].val  = atof(argv[i + j +1]);
+      conditions[k].type = 1;
+      i += 2;
+      PropLength -= 1;
+    }
+    else if (strcmp(argv[i + j],"lt") == 0)
+    {
+      conditions[k].prop = PropArr[j-1];
+      conditions[k].val  = atof(argv[i + j +1]);
+      conditions[k].type = -1;
+      i += 2;
+      PropLength -= 1;
+    }
+    else
+      sprintf(PropArr[j],"%s",argv[i + j]);
+  } 
 
   print_input();
   printf("SAMPLESAG\n\n");
@@ -177,6 +199,7 @@ int main(int argc, char *argv[])
       if (!(fbox = fopen(hdf5file,"r")))
         continue;
       fclose(fbox); 
+      
       read_saghdf5(hdf5file,SnapGal,wlambda,ig,icount);
 
       ig += NGals;
@@ -228,6 +251,10 @@ int main(int argc, char *argv[])
      line = integ_line(zcold[id],nlyc_arr[id], id, ised);
    }
 
+// Apply conditions, if any
+  
+   
+  
 
 
   }
@@ -240,7 +267,7 @@ int main(int argc, char *argv[])
 
   if (strcmp(OutFormat,"ASCII") == 0 || \
       strcmp(OutFormat,"ALL") == 0)
-    write_ascee(Gal, zapp,zspace,Mags,OutFile);
+    write_ascii(Gal, zapp,zspace,Mags,OutFile);
   
 
   if (strcmp(OutFormat,"FITS") == 0 || \

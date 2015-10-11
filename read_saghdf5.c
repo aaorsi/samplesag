@@ -9,7 +9,7 @@
 #include "proto.h"
 
 
-void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr,int icount)
+void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr, int icount)
 {	
 
 	hid_t file_id = H5Fopen(fname, H5F_ACC_RDONLY, H5P_DEFAULT);
