@@ -110,7 +110,9 @@ int main(int argc, char *argv[])
   }
 
   PropLength = argc - i;
-  
+ 
+  k = 0;
+
   for (j = 0; j<PropLength; j++)
   {
     // For now there are only two conditions implemented: gt and lt.
@@ -121,6 +123,7 @@ int main(int argc, char *argv[])
       conditions[k].type = 1;
       i += 2;
       PropLength -= 1;
+      k++;
     }
     else if (strcmp(argv[i + j],"lt") == 0)
     {
@@ -129,10 +132,13 @@ int main(int argc, char *argv[])
       conditions[k].type = -1;
       i += 2;
       PropLength -= 1;
+      k++;
     }
     else
       sprintf(PropArr[j],"%s",argv[i + j]);
   } 
+
+  nconditions = k;
 
   print_input();
   printf("SAMPLESAG\n\n");
@@ -226,36 +232,39 @@ int main(int argc, char *argv[])
       for (_i = 0;_i <NBinSed; _i++)
         spec[_i] = SnapGal[id].Sed[_i];
     }
-
-
-
-  //    Magnitudes in real-space, observer-frame
-    for (k = 0; k<NMags; k++)
-    {
-  //    id = k + (NMags*2)*j;
-      Mags[id] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
-      wlambda,spec,1,redshift,0,1);
+   
+//  Identify what properties are required. This is only done once
+    if ( id == 0)
+    { 
+        Magdump   = get_magsprops(PropArr);   // magnitudes
+        Linesdump = get_linesprops(PropArr);  // lines
+        Copydump  = get_copiedprops(PropArr); // taken from standard SAG HDF5 dumps
     }
 
-  // Inclination angle (random) and dust extinction for each galaxy:    
-    incl[id] = gsl_rng_uniform (r);
-//  B-band magnitude is necessary to compute dust extinction for this model.
-    magB = compute_mag_filter(idB,Nsteps_filter[idB], wlambda,SnapGal[id].Sed,
-    0,redshift,0,0);
-    dust_ext[id] = dust_extinction(wlambda,incl[id],id,magbin,SnapGal[id].Sed,magB);
+    // Compute magnitudes
+    if (Magdump == 1)
+    { 
+      for (k = 0; k< NMagdump; k++)
+        Propval[id][MagP[k]] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
+    wlambda,spec,1,redshift,0,1);
+    }
 
-// Compute emission-lines
-   nlyc_arr[id] = compute_lyc(wlambda,SnapGal[id].Sed); 
-   for (il = 0; il< NLines; il++)
-   {
-     line = integ_line(zcold[id],nlyc_arr[id], id, ised);
-   }
+    // Compute line luminosities
+    if (Linesdump == 1)
+    {
+      nlyc_arr[id] = compute_lyc(wlambda,SnapGal[id].Sed); 
+      for (k = 0; k < NLinedump; k++)
+        Propval[id][LineP[k]] = integ_line(zcold[id],nlyc_arr[id],id, ised);
+    }
 
-// Apply conditions, if any
-  
-   
-  
+    // Copy variables that dont require post-processing 
+    if (Copydump == 1)
+    {
+      for (k = 0; k< NCopydump; k++)
+        PropVal[id][CopyP[k]] = get_vars();
+    }
 
+    // Apply conditions
 
   }
 
