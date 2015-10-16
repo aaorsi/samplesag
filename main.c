@@ -241,12 +241,20 @@ int main(int argc, char *argv[])
         Copydump  = get_copiedprops(PropArr); // taken from standard SAG HDF5 dumps
     }
 
+// Copy variables that dont require post-processing 
+
+    if (Copydump == 1)
+    {
+      for (k = 0; k< NCopydump; k++)
+        PropVal[id][CopyP[k]] = get_vars();
+    }
+
     // Compute magnitudes
     if (Magdump == 1)
     { 
       for (k = 0; k< NMagdump; k++)
         Propval[id][MagP[k]] = compute_mag_filter(idMag[k],Nsteps_filter[idMag[k]],\
-    wlambda,spec,1,redshift,0,1);
+        wlambda,spec,1,redshift,0,1);
     }
 
     // Compute line luminosities
@@ -257,15 +265,7 @@ int main(int argc, char *argv[])
         Propval[id][LineP[k]] = integ_line(zcold[id],nlyc_arr[id],id, ised);
     }
 
-    // Copy variables that dont require post-processing 
-    if (Copydump == 1)
-    {
-      for (k = 0; k< NCopydump; k++)
-        PropVal[id][CopyP[k]] = get_vars();
-    }
-
-    // Apply conditions
-
+ 
   }
 
   if (strcmp(OutFormat,"HDF5") == 0 || \
