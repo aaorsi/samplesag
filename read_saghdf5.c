@@ -20,66 +20,65 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr, int
 
 	if (file_id < 0)
 	{
-		printf("Unable to open file %s\n",fname);
+		printf("ERROR (read_saghdf5) : Unable to open file %s\n",fname);
 		exit(1);
 	}
 
-	if (H5LTget_dataset_info(file_id,"/BulgeMass",dims,NULL,NULL) < 0)
+  if (H5LTget_dataset_info(file_id,"/SFR",dims,NULL,NULL) < 0)
 	{
-		printf("Unable to read dimensions of dset BulgeMass.\n");
+		printf("ERROR (read_saghdf5): Unable to read dimensions from SFR.\n");
 		exit(1);
 	}
 
 	NGals = (size_t) (dims[0]*dims[1]);
-//	printf("Read %d galaxies from file %s\n",NGals,fname);
+	printf("INFO (read_saghdf5): Reading %d galaxies from file %s\n",NGals,fname);
 
 
   if (icount == 0)
   {
 	  if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/lambda",wlambda) < 0)
 	  {
-		  printf("unable to read lambda array. Exiting\n");
+		  printf("ERROR (read_saghdf5): unable to read lambda array. Exiting\n");
 		  exit(1);
 	  } 
 
     NBinSed = sizeof(wlambda)/sizeof(wlambda[0]);
   }
 
-	BulgeMass = (float *) malloc(NGals * sizeof(float));
+  for (k = 0; k< CopyDump; k++)
+  {
 
-	if (H5LTread_dataset_float(file_id,"/BulgeMass",BulgeMass) < 0)
-	{
-		printf("Unable to read BulgeMass\n");
-		exit(1);
-	}
+	  
+    Prop = (float *) malloc(NGals * sizeof(float));
 
-	DiscMass = (float *) malloc(NGals * sizeof(float));
-	
-	if (H5LTread_dataset_float(file_id,"/DiscMass",DiscMass) < 0)
-	{
-		printf("Unable to read DiscMass\n");
-		exit(1);
-	}
-/*
+	  if (H5LTread_dataset_float(file_id,"/%s/%s",Dump[k].Dir,Dump[k].Name) < 0)
+	  {
+		  printf("ERROR (read_saghdf5): Unable to read %s\n",Dump[k].Name);
+		  exit(1);
+	  }
+
 	for (i = 0;i<NGals;i++)
-		SnapGal[i+id_arr].StellarMass = DiscMass[i] + BulgeMass[i];
-*/
+		SnapGal[i+id_arr].Props[k] = Prop[i];
 
-	float * sed_arr = malloc(NGals * NBinSed * sizeof(float));
+  // Read SED only if magnitudes are requested
+  if (Magdump > 0)
+  {
+	  float * sed_arr = malloc(NGals * NBinSed * sizeof(float));
 
-	if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/Sed",sed_arr) < 0)
-	{
-		printf("Unable to read sed.\n");
-		exit(1);
-	}
+  	if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/Sed",sed_arr) < 0)
+	  {
+		  printf("ERROR (read_saghdf5): Unable to read sed.\n");
+		  exit(1);
+	  }
 
-	float *dust_ext = malloc(NGals*NBinSed * sizeof(float));
-	if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/dust_ext",dust_ext) < 0)
-	{
-		printf("Unable to read dust_ext.\n");
-		exit(1);
-	}
+//	  float *dust_ext = malloc(NGals*NBinSed * sizeof(float));
+//	  if (H5LTread_dataset_float(file_id,"/SED/Magnitudes/dust_ext",dust_ext) < 0)
+//	  {
+//  	  printf("ERROR (read_saghdf5): Unable to read dust_ext.\n");
+//		  exit(1);
+//	  }
 
+  }
 //	No idea if this works... it must be tested.
 /*	k = 0;
 	for (i = 0;i < NGals; i++)
@@ -102,13 +101,12 @@ void read_saghdf5(char *fname, sagobj *SnapGal, float *wlambda, long id_arr, int
 	NGals = k;
 
 	free(dust_ext);
-	free(DiscMass);
-	free(BulgeMass);
 	free(sed_arr);
+  free(Prop);
 
 	if (H5Fclose(file_id) < 0)
 	{
-		printf("Error while closing file %s\n",fname);
+		printf("ERROR (read_saghdf5): Error while closing file %s\n",fname);
 		exit(1);
 	}	
 

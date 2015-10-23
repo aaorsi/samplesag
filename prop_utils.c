@@ -1,3 +1,7 @@
+#include<string.h>
+#include "allvars.h"
+#include "proto.h"
+
 
 
 int get_magsprops(char * PropArr)
@@ -7,13 +11,12 @@ int get_magsprops(char * PropArr)
 // This function identifies which magnitudes will be computed. Returns 1 if there are magnitudes at all, 0 otherwise.
 //  ** Magnitudes **    
   dust_check = 0;
-  mgal = 0;
+  id = 0;
   for (j = 0; j< PropLength; j++)
   { 
     // Check if PropArr is a magnitude
     if (strstr(PropArr[j],"mag_") != 0)
     {
-      mgal = 1;
       // Identify the magnitude
       for (k = 0; k < NMags; k++) 
       {
@@ -44,10 +47,80 @@ int get_magsprops(char * PropArr)
             dust_ext[id] = dust_extinction(wlambda,incl[id],id,magbin,SnapGal[id].Sed,magB);
             dust_check = 1;
           }
+          id ++;
         }
       }
     }
   }
-  return mgal;
 
+  return id;
 }
+
+int get_vars(char * PropArr)
+{
+/* Identify which variables are going to be copied from the hdf5 dump file */
+  int id = 0;
+  for (j = 0; j< PropLength< j++)
+  {
+    Propj = PropArr[j];
+    // Avoid variables starting with mag_ or l_ since those are treated separately.
+    if ((strstr(Propj,"mag_") == 0) && 
+        (strstr(Propj,"l_") == 0))
+    {
+      strcpy(Dump[id].Name,Propj);
+// Specific paths in HDF5 dump file should be defined here
+
+      // Halo dir
+      if ((strcmp(Propj,"M200c") == 0) || (strcmp(Propj,"R200c") == 0) \
+      || (strcmp(Propj,"Vmax") == 0) || (strcmp(Propj,"Vpeak") == 0) \
+      || (strcmp(Propj,"cNFW") == 0))
+        strcpy(Dump[id].Dir,"/Halo/");
+
+    id++;
+    }
+  }
+  return id:
+}
+
+
+int get_linesprops(char *PropArr)
+{
+// Identify lines to be computed.
+  int j,k;
+  char *buf;
+  int id = 0;
+
+  for (j = 0; j< PropLength; j++)
+  {
+    Propj = PropArr[j];
+    // Check for emission lines in PropArr
+    if (strstr(Propj,"l_") != 0)
+    {
+      for (k = 0; k< NLines; k++)
+      {
+        if strstr(Emlines_name[k],Propj) != 0 )
+        {
+          Lines[id].id = k;
+          if (strstr(Propj,"_x") != 0)
+            Lines[id].dust = 1
+          
+          id++;
+        }
+      }
+    }
+
+  }
+
+  return id;
+}
+
+      
+
+
+
+
+
+
+
+
+

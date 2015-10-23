@@ -41,7 +41,7 @@
 
 
 
-
+// Galaxy properties are stored in props type
 typedef struct {
 	int snapshot;	// galaxy snapshot 
 	long id_lc;		// id within lightcone
@@ -62,17 +62,31 @@ typedef struct {
 	float v_r;		// radial velocity
 } props;
 
+
+// hdf5 data is stored in sagobj type
 typedef struct {
 	int id;
 	float *Sed;
 	float StellarMass;
 } sagobj;
 
+
+// conditions are stored in cond type
 typedef struct {
   int type = 0;
   char prop[50];
   float val;
 } cond;
+
+// magnitude properties are stored as magprop types 
+typedef struct {
+  int id;
+  int oframe;
+  int dust;
+} magprop;
+
+
+
 
 
 int NBinSed;

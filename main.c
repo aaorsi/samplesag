@@ -16,8 +16,6 @@
 #include "fitsio.h"
 #include <gsl/gsl_rng.h>
 
-// Read IDs   
-
 int main(int argc, char *argv[])
 {
 
@@ -62,100 +60,35 @@ int main(int argc, char *argv[])
 
   gsl_rng_set(r, seed0);
 
-  i = 1
-  strcpy(RootDir,argv[i++]);
-  strcpy(RunName,argv[i++]);
-  nsnap = atoi(argv[i++]);
-  int SnapList[nsnap];
-  for (j = 0; j<nsnap ; j++)
-    SnapList[i] = atoi(argv[i + j])
-  
-  i += j
 
-  nvol = atoi(argv[i++])
-  iv0  = atoi(argv[i++])
-  ivf  = atoi(argv[i++])
+  printf( "                     \n");
+  printf( "  _ _ _    /_  _ _ _ \n");
+  printf( "_) (///)/)((-_) (/(/ \n");
+  printf( "       /         _/  \n");
+  printf( "                     \n");
 
-  strcpy(OutputFormat,argv[i++]);
-  strcpy(FilterInfo,argv[i++]);
-  strcpy(FilterData,argv[i++]);
-  strcpy(VegaFile,argv[i++]);
 
-  NMags   = atoi(argv[i++]);
+//  Read arguments
+//  ********************
+  read_args(argc, argv);  
 
-  int idMag[NMags];
-  const char *NameMags[NMags];
-  int ABArr[NMags];
+#ifdef DEBUG
+//  Print input
+//  ********************
+  print_setup();
 
-  for (j = 0;j<NMags; j++)
-    idMag[i] = atoi(argv[i+j]);
-
-  i += j;
-  for (j = 0; j<NMags; j++)
-    sprintf(NameMags[j],"%s",argv[i + j]);
-
-  i += j;
-  for (j = 0; j<NMags; j++)
-    ABArr[j] = atoi(argv[i + j]);
-
-  i += j;
-
-  strcpy(propcheck,argv[i++]);
-
-//  Check consistency
-  if (propcheck != "props")
-  {
-    printf("ERROR: main.c: When reading arguments, \nproperty list expected, got this instead: %s\n",propcheck);
-    exit(1);
-  }
-
-  PropLength = argc - i;
- 
-  k = 0;
-
-  for (j = 0; j<PropLength; j++)
-  {
-    // For now there are only two conditions implemented: gt and lt.
-    if (strcmp(argv[i + j],"gt") == 0)
-    {
-      conditions[k].prop = PropArr[j-1];
-      conditions[k].val  = atof(argv[i + j +1]);
-      conditions[k].type = 1;
-      i += 2;
-      PropLength -= 1;
-      k++;
-    }
-    else if (strcmp(argv[i + j],"lt") == 0)
-    {
-      conditions[k].prop = PropArr[j-1];
-      conditions[k].val  = atof(argv[i + j +1]);
-      conditions[k].type = -1;
-      i += 2;
-      PropLength -= 1;
-      k++;
-    }
-    else
-      sprintf(PropArr[j],"%s",argv[i + j]);
-  } 
-
-  nconditions = k;
-
-  print_input();
-  printf("SAMPLESAG\n\n");
-  printf("INPUT PARAMETERS\n");
-
-  for (i = 0;i<NMags;i++)
-    printf("Band %d: %s\n",idMag[i],&NameMags[i]);
-//    dprinti(idMag[i]);
+#endif
 
   wlambda = (float *) malloc(SED_MAXW* sizeof(float));
-
   Filterlist = (float *) malloc(NFILTERMAX * NFILTERL * 2 * sizeof(float));
   Nsteps_filter = (int *) malloc(NFILTERMAX * sizeof(int));
 
   get_filterinfo(FilterInfo);
   read_filterfile(FilterData);
   get_Vega_AB(VegaFile);      
+ 
+  read_emlines(emline_file);
+  get_emlinesinfo(eldata);
 
   currsnap = -1;  // This helps determining whether its necessary to open a new snapshot file
 
@@ -163,6 +96,12 @@ int main(int argc, char *argv[])
   incl = (float *) malloc(NTotGals * sizeof(float));
   taueff = (float *) malloc(NBinSed * sizeof(float));
   spec = (float *) malloc(NBinSed * sizeof(float));
+
+
+//  Identify what properties are required. This is only done once
+  Magdump   = get_magsprops(PropArr);   // magnitudes
+  Linesdump = get_linesprops(PropArr);  // lines
+  Copydump  = get_copiedprops(PropArr); // taken from standard SAG HDF5 dumps
 
   icount = 0
   if (currsnap != snap)
@@ -206,7 +145,7 @@ int main(int argc, char *argv[])
         continue;
       fclose(fbox); 
       
-      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icount);
+      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icountCopydump);
 
       ig += NGals;
     }
@@ -233,13 +172,6 @@ int main(int argc, char *argv[])
         spec[_i] = SnapGal[id].Sed[_i];
     }
    
-//  Identify what properties are required. This is only done once
-    if ( id == 0)
-    { 
-        Magdump   = get_magsprops(PropArr);   // magnitudes
-        Linesdump = get_linesprops(PropArr);  // lines
-        Copydump  = get_copiedprops(PropArr); // taken from standard SAG HDF5 dumps
-    }
 
 // Copy variables that dont require post-processing 
 
