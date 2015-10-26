@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         continue;
       fclose(fbox); 
       
-      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icountCopydump);
+      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icount,Copydump);
 
       ig += NGals;
     }
@@ -159,27 +159,8 @@ int main(int argc, char *argv[])
   for (id = 0; id < NGals; id++)
   {
 
-    if (IGMAtt)
-    {
-      igm_attenuation(taueff,wlambda,redshift,id);  
-      spec = SnapGal[id].Sed; 
-      for (_i = 0;_i <NBinSed; _i++)
-        spec[_i] = SnapGal[id].Sed[_i] * exp(-1*taueff[_i]);
-    }
-    else
-    {
-      for (_i = 0;_i <NBinSed; _i++)
-        spec[_i] = SnapGal[id].Sed[_i];
-    }
-   
-
-// Copy variables that dont require post-processing 
-
-    if (Copydump == 1)
-    {
-      for (k = 0; k< NCopydump; k++)
-        PropVal[id][CopyP[k]] = get_vars();
-    }
+    if (gflag[id] > 0)
+      continue;
 
     // Compute magnitudes
     if (Magdump == 1)
@@ -202,22 +183,17 @@ int main(int argc, char *argv[])
 
   if (strcmp(OutFormat,"HDF5") == 0 || \
     strcmp(OutFormat,"ALL") == 0)
-  {
-    write_hdf5(Gal,zapp,zspace,Mags,OutFile);
-  }
-
-  if (strcmp(OutFormat,"ASCII") == 0 || \
-      strcmp(OutFormat,"ALL") == 0)
-    write_ascii(Gal, zapp,zspace,Mags,OutFile);
+    write_hdf5(Propval,gflag,OutFile);
   
-
-  if (strcmp(OutFormat,"FITS") == 0 || \
-    strcmp(OutFormat,"BOTH") == 0)
+  else if (strcmp(OutFormat,"ASCII") == 0 || \
+      strcmp(OutFormat,"ALL") == 0)
+    write_ascii(Propval,gflag,OutFile);
+  else
   {
-    write_fits(Gal,zapp,zspace,Mags,OutFile);
+    printf("ERROR (main.c): Output format %s not recognised\n",OutFormat);
+    exit(1);
   }
-
-
+  
   free(Gal);
   free(SnapGal);
 
