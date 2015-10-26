@@ -3,6 +3,18 @@
 #include "proto.h"
 
 
+// Adds path to variable in case it belongs to a subdir in the HDF5 file.
+void vars_in_subdirs(char *Propj, char *path)
+{
+  // Halo dir
+  if ((strcmp(Propj,"M200c") == 0) || (strcmp(Propj,"R200c") == 0) \
+     || (strcmp(Propj,"Vmax") == 0) || (strcmp(Propj,"Vpeak") == 0) \
+     || (strcmp(Propj,"cNFW") == 0))
+     sprintf(path,"/Halo/");
+
+  return(1);
+}
+
 
 int get_magsprops(char * PropArr)
 {
@@ -68,19 +80,21 @@ int get_vars(char * PropArr)
         (strstr(Propj,"l_") == 0))
     {
       strcpy(Dump[id].Name,Propj);
-// Specific paths in HDF5 dump file should be defined here
+      vars_in_subdirs(Propj, Durmp[id].Dir);
 
-      // Halo dir
+/*      // Halo dir
       if ((strcmp(Propj,"M200c") == 0) || (strcmp(Propj,"R200c") == 0) \
       || (strcmp(Propj,"Vmax") == 0) || (strcmp(Propj,"Vpeak") == 0) \
       || (strcmp(Propj,"cNFW") == 0))
         strcpy(Dump[id].Dir,"/Halo/");
-
+*/
     id++;
     }
   }
   return id:
 }
+
+
 
 
 int get_linesprops(char *PropArr)

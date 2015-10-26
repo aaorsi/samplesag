@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         continue;
       fclose(fbox); 
       
-      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icountCopydump);
+      read_saghdf5(hdf5file,SnapGal,wlambda,ig,icount,Copydump);
 
       ig += NGals;
     }

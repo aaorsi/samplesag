@@ -28,7 +28,7 @@ set nmags       = `echo $#idMags`
 ./get_mags $sag_hdf5dir $ranName $nsnap $snaplist $nvol $iv0 $ivf \
            $OutputFormat $FilterInfo $FilterData $VegaFile \
            $nmags $idMags $NameMags $AB \
-           props redshift mstellar gt 1e8 mag_uox mag_gox mag_zox \
-           l_lyalphax l_oii3727x mcold lt 1e12
+           props GalaxyID mstellar gt 1e8 mag_uox mag_gox mag_zox \
+           l_lyalphax l_oii3727x
 
 
